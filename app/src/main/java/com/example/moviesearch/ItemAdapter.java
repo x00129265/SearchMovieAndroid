@@ -17,58 +17,108 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MovieViewHolder> implements Filterable {
+public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private List<MovieItem> movieList;
-    private List<MovieItem> movieListFull;
+    private List<CategoryItem> categoryList;
     private Context mContext;
     private RecyclerView mRecyclerView;
 
+    public class ItemViewHolder {
+    }
 
     class MovieViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView textView1;
         TextView textView2;
 
-        MovieViewHolder(View itemView) {
+        public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view);
             textView1 = itemView.findViewById(R.id.text_view1);
             textView2 = itemView.findViewById(R.id.text_view2);
         }
+
     }
 
-    ItemAdapter(List<MovieItem> movieList, RecyclerView recyclerView, Context mContext) {
-        this.movieList = movieList;
-        movieListFull = new ArrayList<>(movieList);
+    class CategoryViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageView;
+        TextView textView1;
+        TextView textView2;
+
+        public CategoryViewHolder(@NonNull View itemView) {
+            super(itemView);
+            imageView = itemView.findViewById(R.id.image_view);
+            textView1 = itemView.findViewById(R.id.text_view1);
+            textView2 = itemView.findViewById(R.id.text_view2);
+        }
+
+    }
+
+    ItemAdapter(List<CategoryItem> categoryList, RecyclerView recyclerView, Context mContext) {
+        this.categoryList = categoryList;
+        this.movieList = new ArrayList<>();
         mRecyclerView = recyclerView;
         this.mContext = mContext;
     }
 
-    @NonNull
     @Override
-    public MovieViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_item,
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item,
                 parent, false);
-        v.setOnClickListener(new AdapterView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int itemPosition = mRecyclerView.getChildLayoutPosition(v);
-                MovieItem item = movieList.get(itemPosition);
-                Toast.makeText(mContext, item.getText1(),Toast.LENGTH_SHORT).show();
-            }
-        });
+        switch (viewType) {
+            case 0:
+//                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item,
+//                        parent, false);
+                v.setOnClickListener(new AdapterView.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int itemPosition = mRecyclerView.getChildLayoutPosition(v);
+                        MovieItem item = movieList.get(itemPosition);
+                        Toast.makeText(mContext, item.getText1(),Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+            case 2:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item,
+                        parent, false);
+                v.setOnClickListener(new AdapterView.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int itemPosition = mRecyclerView.getChildLayoutPosition(v);
+                        MovieItem item = movieList.get(itemPosition);
+                        Toast.makeText(mContext, item.getText1(),Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+        }
         return new MovieViewHolder(v);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
-        MovieItem currentItem = movieList.get(position);
 
-        holder.imageView.setImageResource(currentItem.getImageResource());
-        holder.textView1.setText(currentItem.getText1());
-        holder.textView2.setText(currentItem.getText2());
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+        switch (viewHolder.getItemViewType()) {
+            case 0:
+                CategoryViewHolder categoryHolder = (CategoryViewHolder)viewHolder;
+                CategoryItem currentCategiryItem = categoryList.get(i);
+
+                categoryHolder.imageView.setImageResource(currentCategiryItem.getImageResource());
+                categoryHolder.textView1.setText(CategoryItem.getTitle());
+
+                break;
+
+            case 2:
+                MovieViewHolder movieHolder = (MovieViewHolder)viewHolder;
+                MovieItem currentMovieItem = movieList.get(i);
+
+                movieHolder.imageView.setImageResource(currentMovieItem.getImageResource());
+                movieHolder.textView1.setText(movieHolder.getText1());
+                movieHolder.textView2.setText(movieHolder.getText2());
+                break;
+        }
 
     }
+
 
     @Override
     public int getItemCount() {
@@ -86,11 +136,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MovieViewHolde
             List<MovieItem> filteredList = new ArrayList<>();
 
             if (constraint == null || constraint.length() == 0) {
-                filteredList.addAll(movieListFull);
+                filteredList.addAll(movieList);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
-                for (MovieItem item : movieListFull) {
+                for (MovieItem item : movieList) {
                     if (item.getText1().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
@@ -113,4 +163,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MovieViewHolde
             notifyDataSetChanged();
         }
     };
+
+
 }
