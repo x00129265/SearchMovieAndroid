@@ -22,9 +22,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private List<CategoryItem> categoryList;
     private Context mContext;
     private RecyclerView mRecyclerView;
-
-    public class ItemViewHolder {
-    }
+    
 
     class MovieViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -100,10 +98,10 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         switch (viewHolder.getItemViewType()) {
             case 0:
                 CategoryViewHolder categoryHolder = (CategoryViewHolder)viewHolder;
-                CategoryItem currentCategiryItem = categoryList.get(i);
+                CategoryItem currentCategoryItem = categoryList.get(i);
 
-                categoryHolder.imageView.setImageResource(currentCategiryItem.getImageResource());
-                categoryHolder.textView1.setText(CategoryItem.getTitle());
+                categoryHolder.imageView.setImageResource(currentCategoryItem.getImageResource());
+                categoryHolder.textView1.setText(currentCategoryItem.getTitle());
 
                 break;
 
@@ -112,8 +110,8 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                 MovieItem currentMovieItem = movieList.get(i);
 
                 movieHolder.imageView.setImageResource(currentMovieItem.getImageResource());
-                movieHolder.textView1.setText(movieHolder.getText1());
-                movieHolder.textView2.setText(movieHolder.getText2());
+                movieHolder.textView1.setText(currentMovieItem.getText1());
+                movieHolder.textView2.setText(currentMovieItem.getText2());
                 break;
         }
 
