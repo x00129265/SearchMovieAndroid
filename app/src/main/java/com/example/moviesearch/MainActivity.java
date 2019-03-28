@@ -15,11 +15,12 @@ import android.widget.Filter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ItemAdapter adapter;
-    private List<MovieItem> itemList;
+    private List<? super Item> itemList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +32,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void fillItemList() {
         itemList = new ArrayList<>();
-        itemList.add(new MovieItem(R.drawable.ic_search, "One", "Ten"));
-        itemList.add(new MovieItem(R.drawable.ic_search, "Two", "Eleven"));
-        itemList.add(new MovieItem(R.drawable.ic_search, "Three", "Twelve"));
-        itemList.add(new MovieItem(R.drawable.ic_search, "Four", "Thirteen"));
-        itemList.add(new MovieItem(R.drawable.ic_search, "Five", "Fourteen"));
-        itemList.add(new MovieItem(R.drawable.ic_search, "Six", "Fifteen"));
-        itemList.add(new MovieItem(R.drawable.ic_search, "Seven", "Sixteen"));
-        itemList.add(new MovieItem(R.drawable.ic_search, "Eight", "Seventeen"));
-        itemList.add(new MovieItem(R.drawable.ic_search, "Nine", "Eighteen"));
+        itemList.add(new CategoryItem(R.drawable.ic_search, "One"));
+        itemList.add(new CategoryItem(R.drawable.ic_search, "Two"));
+        itemList.add(new CategoryItem(R.drawable.ic_search, "Three"));
+        itemList.add(new CategoryItem(R.drawable.ic_search, "Four"));
+        itemList.add(new CategoryItem(R.drawable.ic_search, "Five"));
+        itemList.add(new CategoryItem(R.drawable.ic_search, "Six"));
+        itemList.add(new CategoryItem(R.drawable.ic_search, "Seven"));
+        itemList.add(new CategoryItem(R.drawable.ic_search, "Eight"));
+        itemList.add(new CategoryItem(R.drawable.ic_search, "Nine"));
     }
 
 

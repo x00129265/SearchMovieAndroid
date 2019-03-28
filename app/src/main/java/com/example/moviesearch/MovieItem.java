@@ -1,25 +1,14 @@
 package com.example.moviesearch;
 
-public class MovieItem {
-    private int imageResource;
-    private String text1;
-    private String text2;
+public class MovieItem extends Item{
+    private String description;
 
-    public MovieItem(int imageResource, String text1, String text2) {
-        this.imageResource = imageResource;
-        this.text1 = text1;
-        this.text2 = text2;
+    public MovieItem(int imageResource, String title, String description) {
+        super(imageResource, title);
+        this.description = description;
     }
 
-    public int getImageResource() {
-        return imageResource;
-    }
-
-    public String getText1() {
-        return text1;
-    }
-
-    public String getText2() {
-        return text2;
+    public String getDescription() {
+        return description;
     }
 }

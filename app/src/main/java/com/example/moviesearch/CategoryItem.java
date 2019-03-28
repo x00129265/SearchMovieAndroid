@@ -1,20 +1,10 @@
 package com.example.moviesearch;
 
-public class CategoryItem {
-    private int imageResource;
-    private String title;
+public class CategoryItem extends Item{
 
     public CategoryItem(int imageResource, String title) {
-        this.imageResource = imageResource;
-        this.title = title;
+        super(imageResource, title);
     }
 
-    public int getImageResource() {
-        return imageResource;
-    }
-
-    public String getTitle() {
-        return title;
-    }
     
 }
