@@ -20,27 +20,29 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ItemAdapter adapter;
-    private List<? super Item> itemList;
+    private List<? super Item> categoryList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fillItemList();
+        fillCategoryList();
         setUpRecyclerView();
     }
 
-    private void fillItemList() {
-        itemList = new ArrayList<>();
-        itemList.add(new CategoryItem(R.drawable.ic_search, "One"));
-        itemList.add(new CategoryItem(R.drawable.ic_search, "Two"));
-        itemList.add(new CategoryItem(R.drawable.ic_search, "Three"));
-        itemList.add(new CategoryItem(R.drawable.ic_search, "Four"));
-        itemList.add(new CategoryItem(R.drawable.ic_search, "Five"));
-        itemList.add(new CategoryItem(R.drawable.ic_search, "Six"));
-        itemList.add(new CategoryItem(R.drawable.ic_search, "Seven"));
-        itemList.add(new CategoryItem(R.drawable.ic_search, "Eight"));
-        itemList.add(new CategoryItem(R.drawable.ic_search, "Nine"));
+    private void fillCategoryList() {
+        // Pre-populated category list
+        categoryList = new ArrayList<>();
+        categoryList.add(new CategoryItem(R.drawable.ic_search, "Action"));
+        categoryList.add(new CategoryItem(R.drawable.ic_search, "Adventure"));
+        categoryList.add(new CategoryItem(R.drawable.ic_comedy, "Comedy"));
+        categoryList.add(new CategoryItem(R.drawable.ic_search, "Crime"));
+        categoryList.add(new CategoryItem(R.drawable.ic_search, "Drama"));
+        categoryList.add(new CategoryItem(R.drawable.ic_search, "Fantasy"));
+        categoryList.add(new CategoryItem(R.drawable.ic_search, "Historical"));
+        categoryList.add(new CategoryItem(R.drawable.ic_search, "Historical fiction"));
+        categoryList.add(new CategoryItem(R.drawable.ic_search, "Horror"));
     }
 
 
@@ -48,12 +50,11 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        adapter = new ItemAdapter(itemList, recyclerView, this);
+        adapter = new ItemAdapter(categoryList, recyclerView, this);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }
-
 
 
     @Override
@@ -67,10 +68,9 @@ public class MainActivity extends AppCompatActivity {
 
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
+            public boolean onQueryTextSubmit(String query) { ;
                 adapter.getFilter().filter(query);
                 return false;
             }

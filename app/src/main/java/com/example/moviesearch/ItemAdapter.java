@@ -3,10 +3,13 @@ package com.example.moviesearch;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -20,6 +23,7 @@ import java.util.List;
 
 public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private List<? super Item> itemList;
+
     private Context mContext;
     private RecyclerView mRecyclerView;
 
@@ -54,6 +58,11 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         this.mContext = mContext;
     }
 
+    public void onPressCategory(String name){
+        getFilter().filter(name);
+        Toast.makeText(mContext, "Category:" + name, Toast.LENGTH_SHORT).show();
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -63,17 +72,19 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         Log.i("Info", "View Type is: "+ viewType);
 
         if(itemList.get(0) instanceof CategoryItem) {
+            // If item list is of type Category then use Category viewHolder
             v.setOnClickListener(new AdapterView.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int itemPosition = mRecyclerView.getChildLayoutPosition(v);
                     CategoryItem item = (CategoryItem)itemList.get(itemPosition);
-                    Toast.makeText(mContext, "Category:" + item.getTitle(), Toast.LENGTH_SHORT).show();
+                    onPressCategory(item.getTitle());
+
                 }
             });
             return new CategoryViewHolder(v);
         } else {
-
+            // Else use movie viewHolder
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_item,
                     parent, false);
             v.setOnClickListener(new AdapterView.OnClickListener() {
@@ -89,23 +100,18 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     @Override
-    public int getItemViewType(int position) {
-        // Just as an example, return 0 or 2 depending on position
-        // Note that unlike in ListView adapters, types don't have to be contiguous
-        return position % 2 * 2;
-    }
-
-    @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        Log.i("Info", "Item view type (2): " + viewHolder.getItemViewType());
+        viewHolder.setIsRecyclable(false); // allows viewHolders to be updated.
+
         if(itemList.get(0) instanceof CategoryItem) {
+            // If item list is of type Category then use Category viewHolder
             CategoryViewHolder categoryHolder = (CategoryViewHolder) viewHolder;
             CategoryItem currentCategoryItem = (CategoryItem) itemList.get(i);
 
             categoryHolder.imageView.setImageResource(currentCategoryItem.getImageResource());
             categoryHolder.textView1.setText(currentCategoryItem.getTitle());
-
         } else {
+            // Else use movie viewHolder
             MovieViewHolder movieHolder = (MovieViewHolder)viewHolder;
             MovieItem currentMovieItem = (MovieItem)itemList.get(i);
 
@@ -129,8 +135,8 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private Filter movieFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<? super Item> filteredList = new ArrayList<>();
-
+//            List<? super Item> filteredList = new ArrayList<>();
+//
 //            for (int i = 0; i < itemList.size(); i++){
 //                filteredList.add(itemList.get(i));
 //            }
@@ -145,9 +151,11 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 //                    }
 //                }
 //            }
+            List<? super Item> searchList = new ArrayList<>();
+            searchList.add(new MovieItem(R.drawable.ic_search, "one", "two"));
 
             FilterResults results = new FilterResults();
-            results.values = itemList;
+            results.values = searchList;
 
             return results;
         }
