@@ -3,30 +3,43 @@ package com.example.moviesearch;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONObject;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private List<? super Item> itemList;
+    private List<MovieItem> searchList;;
 
     private Context mContext;
     private RecyclerView mRecyclerView;
+    private RestfulClient client;
 
+
+    ItemAdapter(List<? super Item> itemList, RecyclerView recyclerView, Context mContext) {
+        this.itemList = itemList;
+        mRecyclerView = recyclerView;
+        this.mContext = mContext;
+        client = new RestfulClient(mContext);
+        searchList = new ArrayList<>();
+    }
 
     class MovieViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -41,48 +54,43 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         }
     }
 
-    class CategoryViewHolder extends RecyclerView.ViewHolder {
+    class GenreViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView textView1;
 
-        public CategoryViewHolder(@NonNull View itemView) {
+        public GenreViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.image_view);
             textView1 = itemView.findViewById(R.id.text_view1);
         }
     }
 
-    ItemAdapter(List<? super Item> itemList, RecyclerView recyclerView, Context mContext) {
-        this.itemList = itemList;
-        mRecyclerView = recyclerView;
-        this.mContext = mContext;
-    }
 
-    public void onPressCategory(String name){
+    public void onPressGenre(String name){
         getFilter().filter(name);
-        Toast.makeText(mContext, "Category:" + name, Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "Genre:" + name, Toast.LENGTH_SHORT).show();
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_item,
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.genre_item,
                 parent, false);
-        RecyclerView.ViewHolder holder = new CategoryViewHolder(v); // use CategoryViewHolder as default
+        RecyclerView.ViewHolder holder = new GenreViewHolder(v); // use GenreViewHolder as default
         Log.i("Info", "View Type is: "+ viewType);
 
-        if(itemList.get(0) instanceof CategoryItem) {
-            // If item list is of type Category then use Category viewHolder
+        if(itemList.get(0) instanceof GenreItem) {
+            // If item list is of type Genre then use Genre viewHolder
             v.setOnClickListener(new AdapterView.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int itemPosition = mRecyclerView.getChildLayoutPosition(v);
-                    CategoryItem item = (CategoryItem)itemList.get(itemPosition);
-                    onPressCategory(item.getTitle());
+                    GenreItem item = (GenreItem)itemList.get(itemPosition);
+                    onPressGenre(item.getTitle());
 
                 }
             });
-            return new CategoryViewHolder(v);
+            return new GenreViewHolder(v);
         } else {
             // Else use movie viewHolder
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_item,
@@ -103,13 +111,13 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         viewHolder.setIsRecyclable(false); // allows viewHolders to be updated.
 
-        if(itemList.get(0) instanceof CategoryItem) {
-            // If item list is of type Category then use Category viewHolder
-            CategoryViewHolder categoryHolder = (CategoryViewHolder) viewHolder;
-            CategoryItem currentCategoryItem = (CategoryItem) itemList.get(i);
+        if(itemList.get(0) instanceof GenreItem) {
+            // If item list is of type Genre then use Genre viewHolder
+            GenreViewHolder genreHolder = (GenreViewHolder) viewHolder;
+            GenreItem currentGenreItem = (GenreItem) itemList.get(i);
 
-            categoryHolder.imageView.setImageResource(currentCategoryItem.getImageResource());
-            categoryHolder.textView1.setText(currentCategoryItem.getTitle());
+            genreHolder.imageView.setImageResource(currentGenreItem.getImageResource());
+            genreHolder.textView1.setText(currentGenreItem.getTitle());
         } else {
             // Else use movie viewHolder
             MovieViewHolder movieHolder = (MovieViewHolder)viewHolder;
@@ -135,26 +143,21 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private Filter movieFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-//            List<? super Item> filteredList = new ArrayList<>();
-//
-//            for (int i = 0; i < itemList.size(); i++){
-//                filteredList.add(itemList.get(i));
-//            }
-//            if (constraint == null || constraint.length() == 0) {
-//                filteredList.addAll(itemList);
-//            } else {
-//                String filterPattern = constraint.toString().toLowerCase().trim();
-//
-//                for ((? super Item) item : itemList) {
-//                    if (item.getTitle().toLowerCase().contains(filterPattern)) {
-//                        filteredList.add(item);
-//                    }
-//                }
-//            }
-            List<? super Item> searchList = new ArrayList<>();
-            searchList.add(new MovieItem(R.drawable.ic_search, "one", "two"));
-
             FilterResults results = new FilterResults();
+            //Toast.makeText(mContext, client.callService(mRecyclerView).get(0).getTitle(), Toast.LENGTH_SHORT).show();
+            //Log.i("RestfulClient, adapter", "YO: " + client.callService(mRecyclerView).get(0).getTitle());
+
+            client.callService(new ServerCallback() {
+                        @Override
+                        public void onSuccess(String response) {
+                            Log.d("RestfulClient, OnSucc", response.toString());
+                            Type listType = new TypeToken<ArrayList<MovieItem>>(){}.getType();
+                            searchList = new Gson().fromJson(response, listType);
+                        }
+                    }
+            );
+
+
             results.values = searchList;
 
             return results;
