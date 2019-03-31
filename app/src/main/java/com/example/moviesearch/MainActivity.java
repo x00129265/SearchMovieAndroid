@@ -39,15 +39,15 @@ public class MainActivity extends AppCompatActivity {
     private void fillCategoryList() {
         // Pre-populated category list
         categoryList = new ArrayList<>();
-        categoryList.add(new GenreItem(R.drawable.ic_search, "Action"));
-        categoryList.add(new GenreItem(R.drawable.ic_search, "Adventure"));
+        categoryList.add(new GenreItem(R.drawable.ic_photo, "Action"));
+        categoryList.add(new GenreItem(R.drawable.ic_photo, "Adventure"));
         categoryList.add(new GenreItem(R.drawable.ic_comedy, "Comedy"));
-        categoryList.add(new GenreItem(R.drawable.ic_search, "Crime"));
-        categoryList.add(new GenreItem(R.drawable.ic_search, "Drama"));
-        categoryList.add(new GenreItem(R.drawable.ic_search, "Fantasy"));
-        categoryList.add(new GenreItem(R.drawable.ic_search, "Historical"));
-        categoryList.add(new GenreItem(R.drawable.ic_search, "Historical fiction"));
-        categoryList.add(new GenreItem(R.drawable.ic_search, "Horror"));
+        categoryList.add(new GenreItem(R.drawable.ic_photo, "Crime"));
+        categoryList.add(new GenreItem(R.drawable.ic_photo, "Drama"));
+        categoryList.add(new GenreItem(R.drawable.ic_photo, "Fantasy"));
+        categoryList.add(new GenreItem(R.drawable.ic_photo, "Thriller"));
+        categoryList.add(new GenreItem(R.drawable.ic_photo, "Historical fiction"));
+        categoryList.add(new GenreItem(R.drawable.ic_photo, "Horror"));
     }
 
 
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) { ;
-                adapter.getFilter().filter(query);
+                adapter.searchMovie(query);
                 return false;
             }
 

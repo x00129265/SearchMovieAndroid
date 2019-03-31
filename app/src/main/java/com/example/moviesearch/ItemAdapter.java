@@ -1,14 +1,14 @@
 package com.example.moviesearch;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -17,8 +17,6 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -31,6 +29,8 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private Context mContext;
     private RecyclerView mRecyclerView;
     private RestfulClient client;
+    private Intent intent;
+    private Bundle bundle;
 
 
     ItemAdapter(List<? super Item> itemList, RecyclerView recyclerView, Context mContext) {
@@ -41,6 +41,11 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         searchList = new ArrayList<>();
     }
 
+    @Override
+    public Filter getFilter() {
+        return movieFilter;
+    }
+
     class MovieViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView textView1;
@@ -48,9 +53,11 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.image_view);
+            imageView = itemView.findViewById(R.id.image_viewMovie);
             textView1 = itemView.findViewById(R.id.text_view1);
             textView2 = itemView.findViewById(R.id.text_view2);
+            intent = new Intent(mContext, MovieActivity.class);
+            bundle = new Bundle();
         }
     }
 
@@ -60,15 +67,15 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
         public GenreViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.image_view);
+            imageView = itemView.findViewById(R.id.image_viewMovie);
             textView1 = itemView.findViewById(R.id.text_view1);
         }
     }
 
 
     public void onPressGenre(String name){
-        getFilter().filter(name);
-        Toast.makeText(mContext, "Genre:" + name, Toast.LENGTH_SHORT).show();
+        searchMovie(name);
+        Toast.makeText(mContext, "Searching for genre:" + name, Toast.LENGTH_SHORT).show();
     }
 
     @NonNull
@@ -77,7 +84,6 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.genre_item,
                 parent, false);
         RecyclerView.ViewHolder holder = new GenreViewHolder(v); // use GenreViewHolder as default
-        Log.i("Info", "View Type is: "+ viewType);
 
         if(itemList.get(0) instanceof GenreItem) {
             // If item list is of type Genre then use Genre viewHolder
@@ -100,7 +106,18 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
                 public void onClick(View v) {
                     int itemPosition = mRecyclerView.getChildLayoutPosition(v);
                     MovieItem item = (MovieItem)itemList.get(itemPosition);
-                    Toast.makeText(mContext,"Movie:" + item.getTitle(),Toast.LENGTH_SHORT).show();
+                    bundle.putInt("img",item.getImageResource());
+                    bundle.putString("title",item.getTitle());
+                    bundle.putString("genre",item.getGenre());
+                    bundle.putString("year",item.getYear());
+                    bundle.putString("description",item.getDescription());
+                    intent.putExtras(bundle);
+                    mContext.startActivity(intent);
+
+
+                    Toast.makeText(mContext,"Opening Movie:" + item.getTitle(),Toast.LENGTH_SHORT).show();
+
+
                 }
             });
             return new MovieViewHolder(v);
@@ -125,7 +142,8 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
             movieHolder.imageView.setImageResource(currentMovieItem.getImageResource());
             movieHolder.textView1.setText(currentMovieItem.getTitle());
-            movieHolder.textView2.setText(currentMovieItem.getDescription());
+            String text2 = currentMovieItem.getGenre() + ", " +currentMovieItem.getYear();
+            movieHolder.textView2.setText(text2);
         }
     }
 
@@ -135,29 +153,44 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         return itemList.size();
     }
 
-    @Override
-    public Filter getFilter() {
-        return movieFilter;
+
+    public void searchMovie(String query){
+        client.callService(query, new ServerCallback() {
+               @Override
+               public void onSuccess(String response) {
+                   Type listType = new TypeToken<ArrayList<MovieItem>>(){}.getType();
+                   searchList = new Gson().fromJson(response, listType);
+
+                   movieFilter.filter("");
+               }
+           }
+        );
+    }
+
+    public void setImages(){
+        for(int i = 0; i< searchList.size(); i++){
+            MovieItem item = searchList.get(i);
+            item.setImageResource(findGenreImage(item.getGenre().toLowerCase()));
+        }
+    }
+
+    public int findGenreImage(String genre){
+        int icon;
+        if(genre.equals("comedy")){
+            icon = R.drawable.ic_comedy;
+        } else if(genre.equals("thriller")){
+            icon = R.drawable.ic_comedy;
+        } else {
+            icon = R.drawable.ic_photo;
+        }
+        return icon;
     }
 
     private Filter movieFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();
-            //Toast.makeText(mContext, client.callService(mRecyclerView).get(0).getTitle(), Toast.LENGTH_SHORT).show();
-            //Log.i("RestfulClient, adapter", "YO: " + client.callService(mRecyclerView).get(0).getTitle());
-
-            client.callService(new ServerCallback() {
-                        @Override
-                        public void onSuccess(String response) {
-                            Log.d("RestfulClient, OnSucc", response.toString());
-                            Type listType = new TypeToken<ArrayList<MovieItem>>(){}.getType();
-                            searchList = new Gson().fromJson(response, listType);
-                        }
-                    }
-            );
-
-
+            setImages();
             results.values = searchList;
 
             return results;

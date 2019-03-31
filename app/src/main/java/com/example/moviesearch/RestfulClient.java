@@ -28,16 +28,16 @@ public class RestfulClient {
         this.mContext = mContext;
     }
 
-    private String SERVICE_URI = "https://ca2ead2api.azurewebsites.net/api/Movies";
+    private String SERVICE_URI = "https://ca2ead2api.azurewebsites.net/api/Movies/";
 
-    public void callService(final ServerCallback callback)
+    public void callService(String query, final ServerCallback callback)
     {
         try
         {
             RequestQueue queue = Volley.newRequestQueue(mContext);
             try
             {
-                StringRequest strObjRequest = new StringRequest(Request.Method.GET, SERVICE_URI,
+                StringRequest strObjRequest = new StringRequest(Request.Method.GET, SERVICE_URI+query,
                         new Response.Listener<String>()
                         {
                             @Override

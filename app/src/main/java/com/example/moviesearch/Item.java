@@ -13,6 +13,10 @@ public abstract class Item {
         return imageResource;
     }
 
+    public void setImageResource(int imageResource) {
+        this.imageResource = imageResource;
+    }
+
     public String getTitle() {
         return title;
     }
