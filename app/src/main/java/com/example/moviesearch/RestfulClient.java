@@ -50,6 +50,7 @@ public class RestfulClient {
                             @Override
                             public void onErrorResponse(VolleyError error)
                             {
+                                callback.onError();
                                 Log.d("RestfulClient, Error", error.toString());
                             }
 

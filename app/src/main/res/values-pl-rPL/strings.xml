@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MovieSearch</string>
+    <string name="back" translatable="false">Wstecz</string>
+    <string name="searchHint" translatable="false">Wyszukaj...</string>
+</resources>

@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         fillCategoryList();
         setUpRecyclerView();
+
     }
 
     private void fillCategoryList() {
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         categoryList.add(new GenreItem(R.drawable.ic_photo, "Fantasy"));
         categoryList.add(new GenreItem(R.drawable.ic_photo, "Thriller"));
         categoryList.add(new GenreItem(R.drawable.ic_photo, "Historical fiction"));
-        categoryList.add(new GenreItem(R.drawable.ic_photo, "Horror"));
+        categoryList.add(new GenreItem(R.drawable.ic_horror, "Horror"));
     }
 
 
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         MenuItem searchItem = menu.findItem(R.id.action_search);
 
         final SearchView searchView = (SearchView) searchItem.getActionView();
-
+        searchView.setQueryHint(getString(R.string.searchHint));
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

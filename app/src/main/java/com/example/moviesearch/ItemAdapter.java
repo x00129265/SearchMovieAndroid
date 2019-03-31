@@ -126,6 +126,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+        // Bind view holders depending on what list item is used. I.e. is itemList of type Movie or Genre
         viewHolder.setIsRecyclable(false); // allows viewHolders to be updated.
 
         if(itemList.get(0) instanceof GenreItem) {
@@ -158,13 +159,21 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         client.callService(query, new ServerCallback() {
                @Override
                public void onSuccess(String response) {
+                   // On response OK
                    Type listType = new TypeToken<ArrayList<MovieItem>>(){}.getType();
                    searchList = new Gson().fromJson(response, listType);
 
                    movieFilter.filter("");
                }
-           }
-        );
+
+               @Override
+               public void onError() {
+                   // On response Error
+                   searchList = new ArrayList<>();
+
+                   movieFilter.filter("");
+               }
+        });
     }
 
     public void setImages(){
@@ -176,10 +185,11 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
     public int findGenreImage(String genre){
         int icon;
-        if(genre.equals("comedy")){
+        if(genre.contains("comedy")){
             icon = R.drawable.ic_comedy;
-        } else if(genre.equals("thriller")){
-            icon = R.drawable.ic_comedy;
+        } else if(genre.contains("horror")){
+            icon = R.drawable.ic_horror;
+            //etc...
         } else {
             icon = R.drawable.ic_photo;
         }
@@ -187,6 +197,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     }
 
     private Filter movieFilter = new Filter() {
+        // First executes Filtering and then publishing results
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();
