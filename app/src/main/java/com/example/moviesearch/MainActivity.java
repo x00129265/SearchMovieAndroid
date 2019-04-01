@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fillCategoryList() {
-        // Pre-populated category list
+        // Pre-populated category(Genre) list
         categoryList = new ArrayList<>();
         categoryList.add(new GenreItem(R.drawable.ic_photo, "Action"));
         categoryList.add(new GenreItem(R.drawable.ic_photo, "Adventure"));
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) { ;
+            public boolean onQueryTextSubmit(String query) {
                 adapter.searchMovie(query);
                 return false;
             }

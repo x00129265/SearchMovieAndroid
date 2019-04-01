@@ -23,8 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
+    // This class is responsible for setting up Recycling view of objects
+    // It creates 2 different types of views, depending on list of items it contains (Genre or Movies)
+    // - Genre Recycler view will allow search for movies of genre type
+    // - Movie Recycler view allows user to open Movie activity
     private List<? super Item> itemList;
-    private List<MovieItem> searchList;;
+    private List<MovieItem> searchList;
 
     private Context mContext;
     private RecyclerView mRecyclerView;
@@ -159,7 +163,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
         client.callService(query, new ServerCallback() {
                @Override
                public void onSuccess(String response) {
-                   // On response OK
+                   // On response OK return items that were found in list
                    Type listType = new TypeToken<ArrayList<MovieItem>>(){}.getType();
                    searchList = new Gson().fromJson(response, listType);
 
@@ -168,7 +172,7 @@ public class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
 
                @Override
                public void onError() {
-                   // On response Error
+                   // On response Error return empty list
                    searchList = new ArrayList<>();
 
                    movieFilter.filter("");

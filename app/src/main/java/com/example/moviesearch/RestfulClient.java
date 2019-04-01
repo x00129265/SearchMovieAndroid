@@ -34,6 +34,7 @@ public class RestfulClient {
     {
         try
         {
+            query = query.replace(" ", "_"); // on server String "Name_2014 will change to Name 2014
             RequestQueue queue = Volley.newRequestQueue(mContext);
             try
             {

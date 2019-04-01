@@ -18,7 +18,7 @@ public class MainActivityTest {
     private MainActivity mActivity = null;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivity = mActivityTestRule.getActivity();
     }
 
@@ -29,7 +29,7 @@ public class MainActivityTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mActivity = null;
     }
 }
